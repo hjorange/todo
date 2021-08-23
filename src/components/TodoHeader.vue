@@ -1,7 +1,7 @@
 <template>
   <header class="header">
     <h1>todos</h1>
-    <input id="toggle-all" class="toggle-all" type="checkbox" >
+    <input v-model="isall" id="toggle-all" class="toggle-all" type="checkbox" >
     <label for="toggle-all"></label>
     <input
       class="new-todo"
@@ -15,6 +15,7 @@
 
 <script>
 export default {
+  props:['arr'],
   data(){
     return {
 task:''
@@ -24,6 +25,14 @@ task:''
     enter(){
 this.task.length?this.$emit('onenter',this.task):alert('数据不能为空')
 this.task=''
+    }
+  },
+  computed:{
+    isall:{
+      set(check){
+this.arr.forEach(item=>item.isDone=check)
+      },
+   get(){return this.arr.every(item=>item.isDone)}   
     }
   }
  

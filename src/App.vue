@@ -1,8 +1,9 @@
 <template>
   <div class="todoapp">
-<TodoHeader @onenter="downFn"/>
-<TodoMain :arr="list"/>
-<TodoFooter/>
+<TodoHeader @onenter="downFn" :arr="list"/>
+<TodoMain :arr="newlist" @delitem="delitem"/>
+<TodoFooter :arr="list" @onclear="onclear" :active="isActive"
+@setactive="setactive"/>
   </div>
 </template>
 
@@ -19,25 +20,52 @@ TodoFooter,
   },
   data () {
     return {
-list: [
-        { id: 100, name: "吃饭", isDone: true },
-        { id: 201, name: "睡觉", isDone: false },
-        { id: 103, name: "打豆豆", isDone: true },
-      ],
+      isActive:'',
+      list: JSON.parse(localStorage.getItem('list'))||[]
     }
   },
+//已完成未完成全部渲染页面
+ computed:{
+   newlist(){
+     if(this.isActive==='undone'){
+       return this.list.filter(item=>!item.isDone)
+     }else if(this.isActive==='done'){
+        return this.list.filter(item=>item.isDone)
+     }return this.list
 
-  created () {
+   }
+ },
 
-  },
-
+watch:{
+list:{
+deep:true,
+handler(){
+  localStorage.setItem('list',JSON.stringify(this.list))
+}
+}
+},
   methods: {
+    //添加
 downFn(taskname){
   const id=this.list.length?this.list[this.list.length-1].id+1:100
+ const flag= this.list.some(item=>item.name===taskname)
+ flag?alert('名字重复'):
   this.list.push({
-id:id,
+id,
 name:taskname,
   })
+},
+//清除已完成
+onclear(undone){
+this.list=undone
+},
+setactive(active){
+this.isActive=active
+},
+//删除
+delitem(id){
+  const index=this.list.findIndex(item=>item.id===id)
+  this.list.splice(index,1)
 }
   }
 }
